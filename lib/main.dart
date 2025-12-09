@@ -1,4 +1,7 @@
 import 'package:bz/core/network/dio_client.dart';
+import 'package:bz/core/network/openAi/open_ai_dio.dart';
+import 'package:bz/features/chat_boot/controllers/chat_controller.dart';
+import 'package:bz/features/chat_boot/data/repositories/rag_response_repository.dart';
 import 'package:bz/features/home/views/home_screen.dart';
 import 'package:bz/features/posts/controllers/post_controller.dart';
 import 'package:bz/features/posts/data/repository/post_repository.dart';
@@ -12,6 +15,10 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           create: (_) => PostController(PostRepository(DioClient.create())),
+        ),
+        ChangeNotifierProvider(
+          create: (_) =>
+              ChatController(RagResponseRepository(OpenAiDio.create())),
         ),
         ChangeNotifierProvider(create: (_) => WeatherController()),
       ],

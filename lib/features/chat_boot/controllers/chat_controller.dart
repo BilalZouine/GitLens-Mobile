@@ -1,31 +1,36 @@
-// controllers/chat_controller.dart
-import 'package:bz/features/chat_boot/models/message.dart';
-import 'package:bz/features/chat_boot/repositories/chat_repository.dart';
+import 'package:bz/features/chat_boot/data/models/rag_request.dart';
+import 'package:bz/features/chat_boot/data/models/rag_response.dart';
+import 'package:bz/features/chat_boot/data/repositories/rag_response_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class ChatController with ChangeNotifier {
-  final ChatRepository _repository = ChatRepository();
-  final List<Message> _messages = [];
+  final RagResponseRepository _repo;
 
-  List<Message> get messages => _messages;
+  List<Map<String, String>> chat =
+      []; // store as simple Map<String,String> for easier use
 
-  void addMessage(String text, {bool isUser = true}) {
-    _messages.add(Message(text: text, isUser: isUser));
+  ChatController(this._repo);
+
+  Future<void> sendMessage(String userMessage) async {
+    print("kkkkkk");
+    if (userMessage.trim().isEmpty) return;
+
+    // Add user's message to chat
+    chat.add({'question': userMessage, 'answer': ''});
     notifyListeners();
-  }
-
-  Future<void> sendMessage(String text) async {
-    if (text.trim().isEmpty) return;
-
-    // Add user message
-    addMessage(text, isUser: true);
 
     try {
-      // Get bot response
-      final botMessage = await _repository.sendMessage(text);
-      addMessage(botMessage.text, isUser: false);
-    } catch (e) {
-      addMessage('Sorry, something went wrong.', isUser: false);
+      // Call API
+      RagRequest req = RagRequest(question: userMessage);
+      RagResponse res = await _repo.getAnswer(req);
+
+      // Update the last chat entry with answer
+      chat[chat.length - 1]['answer'] = res.answer ?? '';
+      notifyListeners();
+    } catch (err) {
+      // Optionally handle API error
+      chat[chat.length - 1]['answer'] = 'Error: $err';
+      notifyListeners();
     }
   }
 }

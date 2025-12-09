@@ -1,4 +1,3 @@
-// widgets/chat_item.dart
 import 'package:flutter/material.dart';
 
 class ChatItem extends StatelessWidget {

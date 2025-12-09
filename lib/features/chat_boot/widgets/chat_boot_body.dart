@@ -1,4 +1,3 @@
-// widgets/chat_boot_body.dart
 import 'package:bz/features/chat_boot/controllers/chat_controller.dart';
 import 'package:bz/features/chat_boot/widgets/body_item.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +8,22 @@ class ChatBootBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final messages = context.watch<ChatController>().messages;
+    final chatList = context.watch<ChatController>().chat;
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: messages.length,
+      itemCount: chatList.length * 2, // each chat has user + bot
       itemBuilder: (context, index) {
-        final msg = messages[index];
-        return ChatItem(text: msg.text, isUser: msg.isUser);
+        final chatIndex = index ~/ 2;
+        final chat = chatList[chatIndex];
+
+        final isUser = index.isEven;
+        final text = isUser ? chat['question']! : chat['answer']!;
+
+        // Skip empty bot responses
+        if (!isUser && text.isEmpty) return const SizedBox.shrink();
+
+        return ChatItem(text: text, isUser: isUser);
       },
     );
   }
