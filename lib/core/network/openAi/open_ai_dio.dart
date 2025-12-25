@@ -5,8 +5,8 @@ class OpenAiDio {
     final dio = Dio(
       BaseOptions(
         baseUrl: "http://10.0.2.2:6000",
-        connectTimeout: Duration(seconds: 10),
-        receiveTimeout: Duration(seconds: 10),
+        connectTimeout: Duration(seconds: 5000),
+        receiveTimeout: Duration(seconds: 5000),
         headers: {'Accept': 'application/json'},
       ),
     );
